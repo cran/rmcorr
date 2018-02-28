@@ -19,6 +19,7 @@
 #' ## Bland Altman 1995 data
 #' rmcorr(Subject, PacO2, pH, bland1995)
 #' @export
+
 rmcorr <- function(participant, measure1, measure2, dataset, 
                    CIs = c("analytic", "bootstrap"), 
                    nreps = 100, bstrap.out = F) {
@@ -28,14 +29,25 @@ rmcorr <- function(participant, measure1, measure2, dataset,
     args <- as.list(match.call())
     
     Participant <- eval(args$participant, dataset)
+    if (class(Participant) == "character"){
+        Participant <- get(Participant, dataset)
+    }
+    Measure1 <- eval(args$measure1, dataset)
+    if (class(Measure1) == "character"){
+        Measure1 <- get(Measure1, dataset)
+    }
+    Measure2 <- eval(args$measure2, dataset)
+    if (class(Measure2) == "character"){
+        Measure2 <- get(Measure2, dataset)
+    }
+    
+    
     if (!is.factor(Participant)) 
     {
         Participant <- factor(Participant)
         warning(paste("'", args$participant, "' coerced into a factor", sep = ""))
     }
     
-    Measure1 <- eval(args$measure1, dataset)
-    Measure2 <- eval(args$measure2, dataset)
     if (!is.numeric(Measure1) || !is.numeric(Measure2))
         stop("'Measure 1' and 'Measure 2' must be numeric")
     
@@ -122,6 +134,7 @@ rmcorr <- function(participant, measure1, measure2, dataset,
 #' blandrmc <- rmcorr(Subject, PacO2, pH, bland1995)
 #' blandrmc
 #' @export
+
 
 print.rmc <- function(x, ...) {
     cat("\nRepeated measures correlation\n\n")

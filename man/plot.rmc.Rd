@@ -4,14 +4,14 @@
 \alias{plot.rmc}
 \title{Plot the repeated measures correlation coefficient.}
 \usage{
-\method{plot}{rmc}(x, dataset, overall = T, palette = NULL, xlab = NULL,
-  ylab = NULL, overall.col = "gray60", overall.lwd = 3, overall.lty = 2,
-  ...)
+\method{plot}{rmc}(x, dataset = NULL, overall = F, palette = NULL,
+  xlab = NULL, ylab = NULL, overall.col = "gray60", overall.lwd = 3,
+  overall.lty = 2, ...)
 }
 \arguments{
 \item{x}{an object of class "rmc" generated from the \code{\link{rmcorr}} function.}
 
-\item{dataset}{the data frame containing the variables.}
+\item{dataset}{Deprecated: This argument is no longer required}
 
 \item{overall}{logical: if TRUE, plots the regression line between measure1 and
 measure2, ignoring the participant variable.}
@@ -38,18 +38,26 @@ Parallel lines are fitted to each subject's data.
 \examples{
 ## Bland Altman 1995 data
 my.rmc <- rmcorr(participant = Subject, measure1 = PacO2, measure2 = pH, dataset = bland1995)
-plot(my.rmc, bland1995, overall = TRUE)
+plot(my.rmc, overall = TRUE)
+
+#using ggplot instead
+ggplot2::ggplot(bland1995, ggplot2::aes(x = PacO2, y = pH, group = factor(Subject),
+      color = factor(Subject))) +
+      ggplot2::geom_point(ggplot2::aes(colour = factor(Subject))) +
+      ggplot2::geom_line(ggplot2::aes(y = my.rmc$model$fitted.values), linetype = 1) 
+
 
 ## Raz et al. 2005 data
 my.rmc <- rmcorr(participant = Participant, measure1 = Age, measure2 = Volume, dataset = raz2005)
 library(RColorBrewer)
 blueset <- brewer.pal(8, 'Blues')
 pal <- colorRampPalette(blueset)
-plot(my.rmc, raz2005, overall = TRUE, palette = pal, overall.col = 'black') 
+plot(my.rmc, overall = TRUE, palette = pal, overall.col = 'black') 
+
 
 ## Gilden et al. 2010 data
 my.rmc <- rmcorr(participant = sub, measure1 = rt, measure2 = acc, dataset = gilden2010)
-plot(my.rmc, gilden2010, overall = FALSE, lty = 2, xlab = "Reaction Time", ylab = "Accuracy")
+plot(my.rmc, overall = FALSE, lty = 2, xlab = "Reaction Time", ylab = "Accuracy")
 }
 \seealso{
 \code{\link{rmcorr}}

@@ -5,7 +5,7 @@
 #' Parallel lines are fitted to each subject's data.
 #' 
 #' @param x an object of class "rmc" generated from the \code{\link{rmcorr}} function.
-#' @param dataset the data frame containing the variables.
+#' @param dataset Deprecated: This argument is no longer required
 #' @param overall logical: if TRUE, plots the regression line between measure1 and
 #' measure2, ignoring the participant variable.
 #' @param palette the palette to be used. Defaults to the RColorBrewer "Paired" palette 
@@ -19,27 +19,42 @@
 #' @examples
 #' ## Bland Altman 1995 data
 #' my.rmc <- rmcorr(participant = Subject, measure1 = PacO2, measure2 = pH, dataset = bland1995)
-#' plot(my.rmc, bland1995, overall = TRUE)
+#' plot(my.rmc, overall = TRUE)
+#' 
+#' #using ggplot instead
+#' ggplot2::ggplot(bland1995, ggplot2::aes(x = PacO2, y = pH, group = factor(Subject),
+#'       color = factor(Subject))) +
+#'       ggplot2::geom_point(ggplot2::aes(colour = factor(Subject))) +
+#'       ggplot2::geom_line(ggplot2::aes(y = my.rmc$model$fitted.values), linetype = 1) 
+#' 
 #' 
 #' ## Raz et al. 2005 data
 #' my.rmc <- rmcorr(participant = Participant, measure1 = Age, measure2 = Volume, dataset = raz2005)
 #' library(RColorBrewer)
 #' blueset <- brewer.pal(8, 'Blues')
 #' pal <- colorRampPalette(blueset)
-#' plot(my.rmc, raz2005, overall = TRUE, palette = pal, overall.col = 'black') 
+#' plot(my.rmc, overall = TRUE, palette = pal, overall.col = 'black') 
+#' 
 #' 
 #' ## Gilden et al. 2010 data
 #' my.rmc <- rmcorr(participant = sub, measure1 = rt, measure2 = acc, dataset = gilden2010)
-#' plot(my.rmc, gilden2010, overall = FALSE, lty = 2, xlab = "Reaction Time", ylab = "Accuracy")
+#' plot(my.rmc, overall = FALSE, lty = 2, xlab = "Reaction Time", ylab = "Accuracy")
 #' @export
 
-plot.rmc <-function(x, dataset,  overall = T, palette = NULL, xlab = NULL,
+
+
+plot.rmc <-function(x, dataset = NULL, overall = F, palette = NULL, xlab = NULL,
                    ylab = NULL, overall.col = "gray60", overall.lwd = 3,
                    overall.lty = 2, ...) {    
     
-    subs <- factor(dataset[[eval(x$vars[[1]])]])
-    m1 <- dataset[[eval(x$vars[[2]])]]
-    m2 <- dataset[[eval(x$vars[[3]])]]
+    calls <- names(sapply(match.call(), deparse))[-1]
+    if(any("dataset" %in% calls)) {
+        warning("dataset parameter is deprecated")
+    }
+    
+    subs <- x$model$model$Participant
+    m1 <- x$model$model$Measure1
+    m2 <- x$model$model$Measure2
     
     #check for missing values
     newdat <- stats::na.omit(data.frame(subs, m1, m2))
