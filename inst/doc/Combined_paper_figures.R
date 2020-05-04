@@ -1,4 +1,4 @@
-## ---- echo=FALSE, warning=FALSE, message=FALSE---------------------------
+## ---- echo=FALSE, warning=FALSE, message=FALSE--------------------------------
 require(pwr)
 require(psych) 
 require(RColorBrewer)
@@ -199,7 +199,7 @@ mtext(side = 2, "y", las = 1, line = 2.5, cex = 1.2)
 dev.copy2eps(file="plots/Figure3_Transformations.eps")
 dev.off()
 
-## ---- echo=FALSE, fig.height = 8, fig.width = 8--------------------------
+## ---- echo=FALSE, fig.height = 8, fig.width = 8-------------------------------
 power.rmcorr<-function(k, N, effectsizer, sig)
 {
     pwr.r.test(n = ((N)*(k-1))+1, r = effectsizer, sig.level = sig) 
@@ -291,7 +291,7 @@ dev.copy2eps(file="plots/Figure4_Power_curves.eps")
 dev.off()
 
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 #Note for details on Raz: Data captured from Figure 8, Cerebellar Hemispheres (lower right)
 #a) Reproduce correlations in the paper: Cross-sectional (correlation at Time 1)
 Time1raz2005<-subset(raz2005, Time == 1)
@@ -322,7 +322,7 @@ d.rtest <- cor.test(raz2005$Age, raz2005$Volume)
 print(d.rtest)
 
 
-## ---- echo=FALSE, fig.width = 9, fig.height = 6--------------------------
+## ---- echo=FALSE, fig.width = 9, fig.height = 6-------------------------------
 
 layout(matrix(c(1,3,4,2,3,4), 2, 3, byrow = T))
 
@@ -365,7 +365,7 @@ dev.copy2eps(file="plots/Figure5_Volume_Age.eps")
 dev.off()
 
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 #a - rmcorr
 vissearch.rmc <- rmcorr(participant = sub, measure1 = rt, measure2 = acc, dataset = gilden2010)
 print(vissearch.rmc)
@@ -383,7 +383,7 @@ print(agg.lm)
 c.rtest <- cor.test(gilden2010$rt, gilden2010$acc)
 print(c.rtest)
 
-## ---- echo=FALSE, fig.width = 9, fig.height = 6--------------------------
+## ---- echo=FALSE, fig.width = 9, fig.height = 6-------------------------------
 par(mfrow=c(1,3), mar=c(5,4.6,4,0.5), mgp=c(3.2,0.8,0),  oma = c(0, 0, 0, 0), las = 1)
 
 plot(vissearch.rmc, overall = F, xlab = "Reaction Time (seconds)", 
@@ -412,7 +412,7 @@ dev.copy2eps(file="plots/Figure6_Visual_Search.eps")
 dev.off()
 
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 k<-2
 nvals <- seq(8, 250)
 powPearsonLarge <- sapply(nvals, function (x) pwr.r.test(n=x, r=0.5)$power)
@@ -431,7 +431,7 @@ lines(nvals, powvalsdiff, lwd=2.5, col="red")
 dev.copy2eps(file="plots/AppendixA_Figure.eps") 
 dev.off()
 
-## ---- echo = TRUE--------------------------------------------------------
+## ---- echo = TRUE-------------------------------------------------------------
 brainvolage.rmc <- rmcorr(participant = Participant, measure1 = Age, measure2 = Volume, dataset = raz2005)
 
 #Null multi-level model: Random intercept and fixed slope
@@ -482,7 +482,7 @@ ggplot(raz2005, aes(x = Age, y = Volume, group = Participant, color = Participan
 
 ggsave(file = "plots/AppendixC_Figure1.eps", width = 5.70 , height = 5.73, dpi = 300)
 
-## ---- echo = TRUE--------------------------------------------------------
+## ---- echo = TRUE-------------------------------------------------------------
 vissearch.rmc <- rmcorr(participant = sub, measure1 = rt, measure2 = acc, dataset = gilden2010)
 
 null.vis <- lmer(acc ~ rt + (1 | sub), data = gilden2010, REML = FALSE)

@@ -4,8 +4,15 @@
 \alias{rmcorr}
 \title{Calculate the repeated measures correlation coefficient.}
 \usage{
-rmcorr(participant, measure1, measure2, dataset, CIs = c("analytic",
-  "bootstrap"), nreps = 100, bstrap.out = F)
+rmcorr(
+  participant,
+  measure1,
+  measure2,
+  dataset,
+  CIs = c("analytic", "bootstrap"),
+  nreps = 100,
+  bstrap.out = F
+)
 }
 \arguments{
 \item{participant}{A variable giving the subject name/id for each observation.}
