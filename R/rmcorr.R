@@ -125,7 +125,7 @@ rmcorr <- function(participant, measure1, measure2, dataset,
             
             cor.reps[i] <- as.numeric(repsign*sqrt(SSFactor/(SSFactor+SSresidual)))
         }
-        CI.limits <- c((1-CI.level)/2, (1-CI.level) + CI.level)
+        CI.limits <- c((1-CI.level)/2, (1-CI.level)/2 + CI.level)
         rmcorrvalueCI <- stats::quantile(cor.reps,probs=CI.limits)
         resamples <- cor.reps
     }
