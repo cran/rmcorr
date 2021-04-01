@@ -7,14 +7,15 @@ knitr::opts_chunk$set(
 ## ----setup, include=FALSE---------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE, tidy = FALSE)
 options(width = 90)
+library("knitr", "rmarkdown")
 
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(pwr, psych, RColorBrewer, plotrix, rmcorr, lme4, ggplot2, AICcmodavg, ggplot2, merTools, pals)
+#if (!require("pacman")) install.packages("pacman")
+#pacman::p_load(pwr, psych, RColorBrewer, plotrix, rmcorr, lme4, ggplot2, AICcmodavg, ggplot2, merTools, pals)
 
 #Get the working directory
-workingdir <- getwd()
+#workingdir <- getwd()
 
-dir.create(file.path(workingdir, "/plots"), showWarnings = F)
+#dir.create(file.path(workingdir, "/plots"), showWarnings = F)
 
 pvals.fct <- function(input)
 {
@@ -59,7 +60,19 @@ options(boot.ncpus = num.cpus)
 #Number of cpus R is using
 getOption("boot.ncpus", 1L)
 
-sessionInfo()
+require(pwr)
+require(psych)
+require(RColorBrewer)
+require(plotrix)
+require(rmcorr)
+require(lme4)
+require(ggplot2)
+require(AICcmodavg)
+require(merTools)
+require(pals)
+
+
+#sessionInfo()
 
 ## ---- fig.height = 6, fig.width = 8-----------------------------------------------------
 # echo = FALSE, warning = FALSE, results =  "hide",
@@ -128,8 +141,8 @@ abline(lm(submeany[,2]~submeanx[,2]),col="gray50")
 #corresponding regression plot for the same data averaged by participant.
 
 #dev.copy2eps(file="plots/Figure1_Rmcorr_vs_reg.eps", height = 6, width = 8)
-dev.copy(pdf, file="plots/Figure1_Rmcorr_vs_reg.pdf", height = 6, width = 8)
-dev.off()
+#dev.copy(pdf, file="plots/Figure1_Rmcorr_vs_reg.pdf", height = 6, width = 8)
+#dev.off()
 
 ## ---- fig.height = 8, fig.width = 8-----------------------------------------------------
 par(mfrow = c(3,3), mar = c(1,1,.5,.5), mgp = c(2.5,.75,0), 
@@ -202,8 +215,8 @@ mtext(side = 2, outer = T, line = 1.5, "y", at = c(.175, .5, .85), las = 1)
 #(black lines) if the data were treated as IID or averaged by participant.
 
 #dev.copy2eps(file="plots/Figure2_Rmcorr_vs_OLS.eps", height = 8, width = 8)
-dev.copy(pdf, file="plots/Figure2_Rmcorr_vs_OLS.pdf", height = 8, width = 8)
-dev.off()
+#dev.copy(pdf, file="plots/Figure2_Rmcorr_vs_OLS.pdf", height = 8, width = 8)
+#dev.off()
 
 ## ---- fig.height = 6, fig.width = 12----------------------------------------------------
 set.seed(10)
@@ -280,8 +293,8 @@ mtext(side = 2, "y", las = 1, line = 2.5, cex = 1.2)
 #transformations of the data, illustrated here with three examples: (A) original, (B) x/2 + 1, and (C) y − 1.
 
 #dev.copy2eps(file="plots/Figure3_Transformations.eps", height = 6, width = 12)
-dev.copy(pdf, file="plots/Figure3_Transformations.pdf", height = 6, width = 12)
-dev.off()
+#dev.copy(pdf, file="plots/Figure3_Transformations.pdf", height = 6, width = 12)
+#dev.off()
 
 ## ---- fig.height = 6, fig.width = 6-----------------------------------------------------
 power.rmcorr<-function(k, N, effectsizer, sig)
@@ -378,8 +391,8 @@ lines(nvals, powPearsonlarge, col=purplecolors[2], lwd = 2.5)
 #participant (k = 1) is also shown.
 
 #dev.copy2eps(file="plots/Figure4_Power_curves.eps", height = 6, width = 6)
-dev.copy(pdf, file="plots/Figure4_Power_curve.pdf", height = 6, width = 6)
-dev.off()
+#dev.copy(pdf, file="plots/Figure4_Power_curve.pdf", height = 6, width = 6)
+#dev.off()
 
 ## ---- fig.width = 9, fig.height = 6-----------------------------------------------------
 #Note for details on Raz: Data captured from Figure 8, Cerebellar Hemispheres (lower right)
@@ -487,8 +500,8 @@ title("C)", adj = 0)
 #relationship) using rmcorr (B) than with either use of simple regression models (A) and (C). This figure was 
 #created using data from Raz et al. (2005).
 #dev.copy2eps(file="plots/Figure5_Volume_Age.eps", width = 9, height = 6)
-dev.copy(pdf, file="plots/Figure5_Volume_Age.pdf", height = 6, width = 6)
-dev.off()
+#dev.copy(pdf, file="plots/Figure5_Volume_Age.pdf", height = 6, width = 6)
+#dev.off()
 
 ## ---- fig.width = 9, fig.height = 6-----------------------------------------------------
 #a - rmcorr
@@ -546,8 +559,8 @@ title("C)", adj = 0)
 #independent observation. The red line is #the fit to the simple regression/correlation. (C) Simple regression/correlation 
 #(aggregated data): improperly treating each dot as independent. This figure was created using data from Gilden et al. (2010).
 #dev.copy2eps(file="plots/Figure6_Visual_Search.eps", width = 9, height = 6)
-dev.copy(pdf, file="plots/Figure6_Visual_Search.pdf", height = 9, width = 6)
-dev.off()
+#dev.copy(pdf, file="plots/Figure6_Visual_Search.pdf", height = 9, width = 6)
+#dev.off()
 
 ## ---- echo = TRUE, warning = FALSE, fig.width = 6, fig.height = 6-----------------------
 brainvolage.rmc <- rmcorr(participant = Participant, measure1 = Age, measure2 = Volume, dataset = raz2005)
@@ -602,8 +615,8 @@ ggplot(raz2005, aes(x = Age, y = Volume, group = Participant, color = Participan
 #clearly overlap, despite the absence of confidence intervals for rmcorr. 
 
 #Converted to EPS file using Acrobat Pro b/c EPS doesn't support transparency
-ggsave(file = "plots/AppendixC_Figure1.pdf", width = 5.70 , height = 5.73, dpi = 300)
-dev.off()
+#ggsave(file = "plots/AppendixC_Figure1.pdf", width = 5.70 , height = 5.73, dpi = 300)
+#dev.off()
 
 ## ---- echo = TRUE,  warning = FALSE, fig.width = 6, fig.height = 6----------------------
 vissearch.rmc <- rmcorr(participant = sub, measure1 = rt, measure2 = acc, dataset = gilden2010)
@@ -672,7 +685,7 @@ ggplot(gilden2010, aes(x = rt, y = acc, group = sub, color = sub)) +
 #colored lines for Level 1 (participant) effects and the dashed black line for Level 2 (experiment)
 #effects. The shaded areas are 95% confidence intervals for Level 1 effects. Note the models
 #clearly overlap, despite the absence of confidence intervals for rmcorr. 
-ggsave(file = "plots/AppendixC_Figure2.pdf", width = 6.5 , height = 6.5, dpi = 300)
+#ggsave(file = "plots/AppendixC_Figure2.pdf", width = 6.5 , height = 6.5, dpi = 300)
 
 
 #Estimating CIs: Convergence problems with model 1
@@ -706,7 +719,7 @@ ggplot(raz2005, aes(x = Age, y = Volume, group = Participant, color = Participan
   geom_point(aes(colour = Participant)) +
   scale_colour_gradientn(colours=kelly(22)) + theme(plot.title = element_text(hjust = 0.5)) + geom_line(linetype = 3)
 
-ggsave(file = "plots/Figure_rmcorr_diagnostic.pdf", width = 5.70 , height = 5.73, dpi = 300)
+#ggsave(file = "plots/Figure_rmcorr_diagnostic.pdf", width = 5.70 , height = 5.73, dpi = 300)
 #ggsave(file = "plots/Figure_rmcorr_diagnostic.eps", width = 5.70 , height = 5.73, dpi = 300)
-dev.off()
+#dev.off()
 
