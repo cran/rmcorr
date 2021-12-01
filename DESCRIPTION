@@ -1,6 +1,6 @@
 Package: rmcorr
 Title: Repeated Measures Correlation
-Version: 0.4.4
+Version: 0.4.5
 Author: Jonathan Z. Bakdash, Laura R. Marusich
 Maintainer: Laura R. Marusich <lmarusich@gmail.com>
 Description: Compute the repeated measures correlation, a statistical technique
@@ -13,12 +13,13 @@ Depends: R (>= 3.2.1)
 License: GPL-2
 LazyData: true
 Imports: stats, grDevices, graphics, psych, RColorBrewer
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Encoding: UTF-8
 Suggests: knitr, rmarkdown, plotrix, ggplot2, lme4, merTools, pwr,
-        AICcmodavg, pals
+        AICcmodavg, pals, testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2021-08-09 21:38:19 UTC; DoD_Admin
+Packaged: 2021-12-01 20:08:35 UTC; DoD_Admin
 Repository: CRAN
-Date/Publication: 2021-08-10 08:40:01 UTC
+Date/Publication: 2021-12-01 20:20:02 UTC
