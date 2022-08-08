@@ -25,7 +25,7 @@
 #' @seealso \code{\link{plot.rmc}}
 #' @examples
 #' ## Bland Altman 1995 data
-#' rmcorr(Subject, PacO2, pH, bland1995)
+#' rmcorr(Subject, PaCO2, pH, bland1995)
 #' @export
 
 rmcorr <- function(participant, measure1, measure2, dataset,
@@ -40,16 +40,20 @@ rmcorr <- function(participant, measure1, measure2, dataset,
     
     args <- as.list(match.call())
     
+    vars = as.character(c(args$participant, args$measure1, args$measure2))
+    
     Participant <- eval(args$participant, dataset, parent.frame())
     if (isa(Participant, "character")&(length(Participant) == 1)){
         Participant <- get(Participant, dataset)
     }
     Measure1 <- eval(args$measure1, dataset, parent.frame())
     if (isa(Measure1, "character")&(length(Measure1) == 1)){
+        vars[2] <- Measure1
         Measure1 <- get(Measure1, dataset)
     }
     Measure2 <- eval(args$measure2, dataset, parent.frame())
     if (isa(Measure2, "character")&(length(Measure2) == 1)){
+        vars[3] <- Measure2
         Measure2 <- get(Measure2, dataset)
     }
     
@@ -135,7 +139,7 @@ rmcorr <- function(participant, measure1, measure2, dataset,
                      CI = rmcorrvalueCI, 
                      CI.level = CI.level,
                      model = lmmodel, 
-                     vars = as.character(c(args$participant,args$measure1,args$measure2)))
+                     vars = vars)
     if (bstrap.out) {rmoutput$resamples <- resamples}
     class(rmoutput) <- "rmc"
     return (rmoutput)
@@ -149,7 +153,7 @@ rmcorr <- function(participant, measure1, measure2, dataset,
 #' @seealso \code{\link{rmcorr}}
 #' @examples
 #' ## Bland Altman 1995 data
-#' blandrmc <- rmcorr(Subject, PacO2, pH, bland1995)
+#' blandrmc <- rmcorr(Subject, PaCO2, pH, bland1995)
 #' blandrmc
 #' @export
 
