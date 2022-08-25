@@ -1,3 +1,11 @@
+# rmcorr 0.5.2
+
+* R 4.1.0 is now required
+
+# rmcorr 0.5.1 (dev release only, not on CRAN)
+
+* Documentation update: Table describing twedt_dist_measures is now a markdown chunk. This renders correctly with pkgdown
+
 # rmcorr 0.5.0
 
 * Beta: Added rmcorr_mat() to calculate an rmcorr correlation matrix 

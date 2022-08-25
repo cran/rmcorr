@@ -12,10 +12,9 @@ require(knitr)
 require(rmarkdown)
 require(rmcorr)
 
-
 ## -----------------------------------------------------------------------------
 my.rmc <- rmcorr(participant = Subject, measure1 = PaCO2, measure2 = pH, 
-                  dataset = bland1995)
+                 dataset = bland1995)
  
 # Structure of rmcorr object
 #str(my.rmc)
