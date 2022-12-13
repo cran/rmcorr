@@ -1,3 +1,13 @@
+# rmcorr 0.5.4
+
+* Corrected df for confidence intervals. We thank Benjamin Zobel for finding this mistake
+
+# rmcorr 0.5.3 (dev release only, not on CRAN)
+
+* Added more unit tests 
+* Use covr to evaluate code coverage
+* Documentation updates 
+
 # rmcorr 0.5.2
 
 * R 4.1.0 is now required

@@ -16,6 +16,11 @@ require(rmcorr)
 if(!require("cocor"))
   install.packages("cocor")
 
+## ---- eval = FALSE------------------------------------------------------------
+#  #Install cocor
+#  install.packages("cocor")
+#  require(cocor)
+
 ## -----------------------------------------------------------------------------
 #1) Run rmcorr on two different datasets
 model1.marusich2016_exp2  <- rmcorr(Pair, HVT_capture, MARS, marusich2016_exp2)

@@ -17,6 +17,11 @@ if(!require("corrplot"))
   install.packages("corrplot")
 require(corrplot)
 
+## ---- eval = FALSE------------------------------------------------------------
+#  #Install corrplot
+#  install.packages("corrplot")
+#  require(corrplot)
+
 ## -----------------------------------------------------------------------------
 dist_rmc_mat <- rmcorr_mat(participant = Subject, 
                            variables = c("Blindwalk Away",
