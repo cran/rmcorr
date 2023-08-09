@@ -7,10 +7,10 @@ knitr::opts_chunk$set(
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE, tidy = FALSE)
 options(width = 80)
-library("knitr", "rmarkdown", "rmcorr") #, "stats")
-require(knitr)
-require(rmarkdown)
-require(rmcorr)
+library(knitr)
+library(rmarkdown)
+library(rmcorr) 
+
 
 ## -----------------------------------------------------------------------------
 my.rmc <- rmcorr(participant = Subject, measure1 = PaCO2, measure2 = pH, 

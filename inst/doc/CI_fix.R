@@ -7,15 +7,12 @@ knitr::opts_chunk$set(
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE, tidy = FALSE)
 options(width = 80)
-library("knitr", "rmarkdown", "rmcorr") 
-require(knitr)
-require(rmarkdown)
-require(rmcorr)
-require(psych)
+library(knitr)
+library(rmarkdown)
+library(rmcorr) 
+library(psych)
+library(cocor) 
 
-#Kludge to add cocor b/c of lib loc error 
-#if(!require("cocor"))
-#  install.packages("cocor")
 
 ## -----------------------------------------------------------------------------
 brainvolage.rmc <- rmcorr(participant = Participant, measure1 = Age, measure2 = Volume, dataset = raz2005)

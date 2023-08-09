@@ -19,15 +19,12 @@ knitr::opts_chunk$set(
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, tidy = FALSE)
 options(width = 80)
-library("knitr", "rmarkdown", "rmcorr") 
-require(knitr)
-require(rmarkdown)
-require(rmcorr)
-require(psych)
+library(knitr)
+library(rmarkdown)
+library(rmcorr) 
+library(psych)
+library(cocor) 
 
-#Kludge to add cocor b/c of lib loc error 
-#if(!require("cocor"))
-#  install.packages("cocor")
 ```
 
 ### Confidence Interval Fix in 0.5.4
@@ -66,5 +63,4 @@ psych::r.con(0.88, 19, p = 0.95)
 
 #Current, correct CI using effective sample size
 psych::r.con(0.88, 21, p = 0.95)
-```
 ```

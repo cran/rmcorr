@@ -1,10 +1,11 @@
 ---
-title: "Plotting and Multiple Comparisons with rmcorr_mat"
+title: "Correlation Matrix using rmcorr_mat"
 author: "Jonathan Bakdash and Laura Marusich"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: references.bib 
 vignette: >
-  %\VignetteIndexEntry{Plotting and Multiple Comparisons with rmcorr_mat}
+  %\VignetteIndexEntry{Correlation Matrix using rmcorr_mat}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,21 +20,17 @@ knitr::opts_chunk$set(
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, tidy = FALSE)
 options(width = 80)
-library("knitr", "rmarkdown", "rmcorr") 
-require(knitr)
-require(rmarkdown)
-require(rmcorr)
+library(knitr)
+library(rmarkdown)
+library(rmcorr) 
+library(corrplot) 
 
-#Kludge to add corrplot b/c of lib loc error 
-if(!require("corrplot"))
-  install.packages("corrplot")
-require(corrplot)
 ```
-#### Running Examples Requires corrplot
+#### Running Examples Requires corrplot [@corrplot2021]
 ```{r, eval = FALSE}
 #Install corrplot
-install.packages("corrplot")
-require(corrplot)
+ install.packages("corrplot")
+ require(corrplot)
 ```
 
 ## Plotting a Correlation Matrix 

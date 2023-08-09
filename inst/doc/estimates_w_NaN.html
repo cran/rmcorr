@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Jonathan Bakdash and Laura Marusich" />
+
+<meta name="date" content="2023-08-09" />
+
+<title>rmcorr Estimates with NaN</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">rmcorr Estimates with NaN</h1>
+<h4 class="author">Jonathan Bakdash and Laura Marusich</h4>
+<h4 class="date">2023-08-09</h4>
+
+
+
+<div id="nan-estimates" class="section level3">
+<h3>NaN estimates</h3>
+<p>This synthetic dataset produces NaN estimates with rmcorr. Thanks to
+Shreya Ghosh for this example.</p>
+<div id="running-examples-requires-ggextra-ggextra" class="section level4">
+<h4>Running Examples Requires ggExtra <span class="citation">(Attali and
+Baker 2022)</span></h4>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;ggExtra&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(ggExtra)</span></code></pre></div>
+</div>
+<div id="load-data-visualize-and-model" class="section level4">
+<h4>Load data, visualize, and model</h4>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">&quot;../man/data/ghosh_synth.rda&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#Look at data</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>ghosh_synth <span class="co">#Note lots of repeated zeros in A3 and A4</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;    Subject TP  A1 A3 A4 A5  A6</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; 1        1  1   0  0  0 11   0</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; 2        1  2   0  0  0  3   0</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 3        2  1   0  5  0  2   0</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; 4        2  2   0  0  0 16   0</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 5        3  1  72  0 11  0   0</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 6        3  2 161  0 25  0   0</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; 7        4  1  54  9  0 10   0</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; 8        4  2  30  3  0  2   0</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; 9        5  1   0 10  6  0  33</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; 10       5  2   0 13 11  0 106</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; 11       6  1   0  0  0  0   0</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; 12       6  2   0  0  0  0   0</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; 13       7  1   0 43  0  8   0</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; 14       7  2   0 38  0 18   0</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; 15       8  1   8  8  0  0   0</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; 16       8  2   0  6  0  0  45</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 17       9  1   0 38  0  0  48</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; 18       9  2   0 11  0  0  99</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; 19      10  1  28 22  5  0   0</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; 20      10  2   0  7  6  0 151</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">40</span>) <span class="co">#Make jittering reproducible </span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ghosh_synth, <span class="fu">aes</span>(<span class="at">x =</span> A4, <span class="at">y =</span> A3)) <span class="sc">+</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>            <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>            <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="dv">2</span>, <span class="at">height =</span> <span class="dv">2</span>) </span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggMarginal</span>(p, <span class="at">type=</span><span class="st">&quot;histogram&quot;</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>p1</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>rmc.ghosh <span class="ot">&lt;-</span> <span class="fu">rmcorr</span>(Subject, A3, A4, ghosh_synth)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; Warning in rmcorr(Subject, A3, A4, ghosh_synth): &#39;Subject&#39; coerced into a</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; factor</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Warning in sqrt(SSFactor/(SSFactor + SSresidual)): NaNs produced</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>rmc.ghosh</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; Repeated measures correlation</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; r</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; NaN</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; degrees of freedom</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 9</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; p-value</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; 1</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; 95% confidence interval</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; NaN NaN</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#The default rmcorr plot doesn&#39;t jitter values, this masks identical values because they are drawn on top of each other</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="fu">plot</span>(rmc.ghosh)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The NaN estimates appear to be due to insufficient varability in the
+dataset. A possible way to address this issue is adding a small amount
+of random noise.</p>
+</div>
+<div id="add-random-noise" class="section level4">
+<h4>Add random noise</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">67</span>) </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>small.noise1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">dim</span>(ghosh_synth)[[<span class="dv">1</span>]], <span class="dv">0</span>, <span class="fl">0.2</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>small.noise2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">dim</span>(ghosh_synth)[[<span class="dv">1</span>]], <span class="dv">0</span>, <span class="fl">0.2</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    </span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>ghosh_synth<span class="sc">$</span>A3.noise <span class="ot">&lt;-</span> ghosh_synth<span class="sc">$</span>A3 <span class="sc">+</span> small.noise1</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>ghosh_synth<span class="sc">$</span>A4.noise <span class="ot">&lt;-</span> ghosh_synth<span class="sc">$</span>A4 <span class="sc">+</span> small.noise2</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>rmc.ghosh.noise <span class="ot">&lt;-</span> <span class="fu">rmcorr</span>(Subject, A3.noise, A4.noise, ghosh_synth)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; Warning in rmcorr(Subject, A3.noise, A4.noise, ghosh_synth): &#39;Subject&#39; coerced</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; into a factor</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>rmc.ghosh.noise</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; Repeated measures correlation</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; r</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; -0.02006963</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; degrees of freedom</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; 9</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; p-value</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; 0.9532957</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; 95% confidence interval</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; -0.6125697 0.5868709</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ghosh_synth, <span class="fu">aes</span>(<span class="at">x =</span> A3.noise, <span class="at">y =</span> A4.noise, </span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>       <span class="at">group =</span> <span class="fu">factor</span>(Subject), <span class="at">color =</span> <span class="fu">factor</span>(Subject))) <span class="sc">+</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour =</span> <span class="fu">factor</span>(Subject), </span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>                                        <span class="at">alpha =</span> <span class="fl">0.10</span>)) <span class="sc">+</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> rmc.ghosh.noise<span class="sc">$</span>model<span class="sc">$</span>fitted.values),</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>                         <span class="at">linetype =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>     <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;none&quot;</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggMarginal</span>(p2, <span class="at">type=</span><span class="st">&quot;histogram&quot;</span>)</span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>p3</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="caveats" class="section level4">
+<h4>Caveats</h4>
+<p>The results with rmcorr should be interpreted with some caution
+because the data are non-normal with zero-inflation. Still, these
+results provides at least a starting point: A common linear association
+around 0. A much more complicated alternative is fitting a multilevel
+model with an appropriate distribution for zero-inflated data (e.g.,
+negative binomial distribution or zero-inflated Poisson).</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-ggExtra" class="csl-entry">
+Attali, Dean, and Christopher Baker. 2022. <em>ggExtra: Add Marginal
+Histograms to ’Ggplot2’, and More ’Ggplot2’ Enhancements</em>. <a href="https://CRAN.R-project.org/package=ggExtra">https://CRAN.R-project.org/package=ggExtra</a>.
+</div>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

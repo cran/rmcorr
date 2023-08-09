@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonathan Bakdash and Laura Marusich" />
 
-<meta name="date" content="2022-12-13" />
+<meta name="date" content="2023-08-09" />
 
 <title>Confidence Interval Fix</title>
 
@@ -121,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -333,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Confidence Interval Fix</h1>
 <h4 class="author">Jonathan Bakdash and Laura Marusich</h4>
-<h4 class="date">2022-12-13</h4>
+<h4 class="date">2023-08-09</h4>
 
 
 
@@ -358,21 +365,21 @@ calculation to the current, correct CI. The sample size is <em>N</em> =
 72 with <em>k</em> = 2 repeated measures. Note the difference in CI
 bounds is slight: old, incorrect 95% CI [-0.8053581, -0.5637514] and
 current, correct 95% CI [ -0.804153, -0.566080].</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>brainvolage.rmc <span class="ot">&lt;-</span> <span class="fu">rmcorr</span>(<span class="at">participant =</span> Participant, <span class="at">measure1 =</span> Age, <span class="at">measure2 =</span> Volume, <span class="at">dataset =</span> raz2005)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in rmcorr(participant = Participant, measure1 = Age, measure2 =</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Volume, : &#39;Participant&#39; coerced into a factor</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Old, incorrect CI using error df</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(brainvolage.rmc<span class="sc">$</span>r, brainvolage.rmc<span class="sc">$</span>df, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.8053581 -0.5637514</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#Current, correct CI using effective sample size</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>brainvolage.rmc<span class="sc">$</span>CI</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.804153 -0.566080</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#Manual calculation</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(brainvolage.rmc<span class="sc">$</span>r, brainvolage.rmc<span class="sc">$</span>df <span class="sc">+</span> <span class="dv">2</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.804153 -0.566080</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>brainvolage.rmc <span class="ot">&lt;-</span> <span class="fu">rmcorr</span>(<span class="at">participant =</span> Participant, <span class="at">measure1 =</span> Age, <span class="at">measure2 =</span> Volume, <span class="at">dataset =</span> raz2005)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; Warning in rmcorr(participant = Participant, measure1 = Age, measure2 = Volume,</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; : &#39;Participant&#39; coerced into a factor</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#Old, incorrect CI using error df</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(brainvolage.rmc<span class="sc">$</span>r, brainvolage.rmc<span class="sc">$</span>df, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; [1] -0.8053581 -0.5637514</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#Current, correct CI using effective sample size</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>brainvolage.rmc<span class="sc">$</span>CI</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; [1] -0.804153 -0.566080</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#Manual calculation</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(brainvolage.rmc<span class="sc">$</span>r, brainvolage.rmc<span class="sc">$</span>df <span class="sc">+</span> <span class="dv">2</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; [1] -0.804153 -0.566080</span></span></code></pre></div>
 </div>
 <div id="example-with-substantial-difference-in-cis" class="section level4">
 <h4>Example with Substantial Difference in CIs</h4>
@@ -380,27 +387,26 @@ current, correct 95% CI [ -0.804153, -0.566080].</p>
 <em>k</em> = 2 repeated measures and <em>r</em><sub><em>rm</em></sub> =
 0.88, we show a substantial difference in the old 95% CI [-0.5257087,
 0.9974701] compared to the correct 95% CI [0.2394418, 0.9868084].</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Old, incorrect CI using error df</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(<span class="fl">0.88</span>, <span class="dv">4</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.5257087  0.9974701</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Current, correct CI using effective sample size</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(<span class="fl">0.88</span>, <span class="dv">6</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.2394418 0.9868084</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#Old, incorrect CI using error df</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(<span class="fl">0.88</span>, <span class="dv">4</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; [1] -0.5257087  0.9974701</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#Current, correct CI using effective sample size</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(<span class="fl">0.88</span>, <span class="dv">6</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; [1] 0.2394418 0.9868084</span></span></code></pre></div>
 </div>
 <div id="another-slight-example-same-as-above-with-a-larger-sample-size" class="section level4">
 <h4>Another Slight Example: Same as Above with a Larger Sample Size</h4>
 <p>The same example as above except with the number of participants
 quadrupled: <em>N</em> = 20. Note the difference in coverage of CIs is
 now slight.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Old, incorrect CI using error df</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(<span class="fl">0.88</span>, <span class="dv">19</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.7093015 0.9532081</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Current, correct CI using effective sample size</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(<span class="fl">0.88</span>, <span class="dv">21</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.7229510 0.9505773</span></span></code></pre></div>
-<p>```</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#Old, incorrect CI using error df</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(<span class="fl">0.88</span>, <span class="dv">19</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; [1] 0.7093015 0.9532081</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#Current, correct CI using effective sample size</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">r.con</span>(<span class="fl">0.88</span>, <span class="dv">21</span>, <span class="at">p =</span> <span class="fl">0.95</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; [1] 0.7229510 0.9505773</span></span></code></pre></div>
 </div>
 </div>
 

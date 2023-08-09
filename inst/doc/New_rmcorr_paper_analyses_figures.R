@@ -7,15 +7,10 @@ knitr::opts_chunk$set(
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE, tidy = FALSE)
 options(width = 80)
-library("knitr", "rmarkdown")
-
-#if (!require("pacman")) install.packages("pacman")
-#pacman::p_load(pwr, psych, RColorBrewer, plotrix, rmcorr, lme4, ggplot2, AICcmodavg, ggplot2, merTools, pals)
-
-#Get the working directory
-#workingdir <- getwd()
-
-#dir.create(file.path(workingdir, "/plots"), showWarnings = F)
+library(knitr)
+library(rmarkdown)
+library(rmcorr) 
+library(merTools)
 
 pvals.fct <- function(input)
 {

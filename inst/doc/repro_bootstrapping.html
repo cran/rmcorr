@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Jonathan Bakdash and Laura Marusich" />
+
+<meta name="date" content="2023-08-09" />
+
+<title>Bootstrapping Example</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Bootstrapping Example</h1>
+<h4 class="author">Jonathan Bakdash and Laura Marusich</h4>
+<h4 class="date">2023-08-09</h4>
+
+
+
+<div id="reproducible-example-of-bootstrapping" class="section level3">
+<h3>Reproducible Example of Bootstrapping</h3>
+<p>Below we illustrate a reproducible example of bootstrapping with
+rmcorr. Note, <em>only</em> the estimated confidence interval changes
+with bootstrapping. We also show how to extract the sampling
+distribution for bootstrapped rmcorr effect size. <br> -
+<em>set.seed()</em> is used to make the results reproducible. <br> -
+<em>nreps</em> is set to only 100 to run this example quickly. Ideally,
+it should be &gt; 500.</p>
+<div id="rmcorr-effect-size-with-bootstrapped-95-confidence-inverval" class="section level4">
+<h4>Rmcorr effect size with Bootstrapped 95% Confidence Inverval</h4>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">532</span>) </span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>boot.blandrmc <span class="ot">&lt;-</span> <span class="fu">rmcorr</span>(Subject, PaCO2, pH, bland1995,</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>                        <span class="at">CIs =</span> <span class="st">&quot;bootstrap&quot;</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>                        <span class="at">nreps =</span> <span class="dv">100</span>, </span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>                        <span class="at">bstrap.out =</span> T)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; Warning in rmcorr(Subject, PaCO2, pH, bland1995, CIs = &quot;bootstrap&quot;, nreps =</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; 100, : &#39;Subject&#39; coerced into a factor</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>boot.blandrmc</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; Repeated measures correlation</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; r</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; -0.5067697</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; degrees of freedom</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; 38</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; p-value</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; 0.0008471081</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; 95% confidence interval</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; -0.726023 -0.05893805</span></span></code></pre></div>
+</div>
+<div id="sampling-distribution-of-bootstrapped-effects" class="section level4">
+<h4>Sampling Distribution of Bootstrapped Effects</h4>
+<p>In this graph, the x-axis is the bootstrapped <em>rmcorr</em> effect
+sizes and the y-axis frequency. The red line is the mean of the sampling
+distribution and blue line is the median of the sampling distribution.
+Because these two values are calculated from the bootstrap sampling
+distribution, note that they slightly differ from the non-bootstrapped
+point estimated effect size.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>boot.rmcorr.samplingdist <span class="ot">&lt;-</span> <span class="fu">round</span>(boot.blandrmc<span class="sc">$</span>resamples, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>boot.rmcorr.mean <span class="ot">&lt;-</span> <span class="fu">mean</span>(boot.blandrmc<span class="sc">$</span>resamples)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>boot.rmcorr.median <span class="ot">&lt;-</span> <span class="fu">median</span>(boot.blandrmc<span class="sc">$</span>resamples)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>x.vals <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.2f&quot;</span>, <span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.80</span>, <span class="fl">0.00</span>, <span class="at">by =</span> <span class="fl">0.10</span>))</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">hist</span>(boot.rmcorr.samplingdist, </span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Sampling Distribution of Bootstrapped Effect Sizes&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>     <span class="at">xaxt =</span> <span class="st">&quot;n&quot;</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Effect Size&quot;</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>     <span class="at">las =</span> <span class="dv">1</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> boot.rmcorr.mean,   <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,  <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> boot.rmcorr.median, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, </span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>     <span class="at">at =</span> <span class="fu">as.numeric</span>(x.vals),</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>     <span class="at">labels =</span> x.vals) </span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#Compare point-est effect for bootstrap vs. non-bootstrap model</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#Boostrapped effect sizes</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#Mean</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>boot.rmcorr.mean</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; [1] -0.5073347</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#Median</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>boot.rmcorr.median</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; [1] -0.5304375</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#Non-bootstrapped </span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>blandrmc <span class="ot">&lt;-</span> <span class="fu">rmcorr</span>(Subject, PaCO2, pH, bland1995)</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; Warning in rmcorr(Subject, PaCO2, pH, bland1995): &#39;Subject&#39; coerced into a</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; factor</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>blandrmc<span class="sc">$</span>r</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; [1] -0.5067697</span></span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

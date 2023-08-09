@@ -1,6 +1,6 @@
 Package: rmcorr
 Title: Repeated Measures Correlation
-Version: 0.5.4
+Version: 0.6.0
 Authors@R: c(
     person("Jonathan Z.", "Bakdash", email = "jbakdash@gmail.com", role = "aut",
       comment = c(ORCID = "0000-0002-1409-4779")
@@ -25,16 +25,16 @@ RoxygenNote: 7.2.3
 Encoding: UTF-8
 Suggests: knitr, rmarkdown, plotrix, ggplot2, lme4, merTools, pwr,
         AICcmodavg, pals, testthat (>= 3.0.0), vdiffr, corrplot, cocor,
-        covr
+        covr, ggExtra, gglm
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/lmarusich/rmcorr,
         https://lmarusich.github.io/rmcorr/
 BugReports: https://github.com/lmarusich/rmcorr/issues
 NeedsCompilation: no
-Packaged: 2022-12-13 22:27:14 UTC; DoD_Admin
+Packaged: 2023-08-09 16:13:37 UTC; DoD_Admin
 Author: Jonathan Z. Bakdash [aut] (<https://orcid.org/0000-0002-1409-4779>),
   Laura R. Marusich [aut, cre] (<https://orcid.org/0000-0002-3524-6110>)
 Maintainer: Laura R. Marusich <lmarusich@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-12-13 22:40:02 UTC
+Date/Publication: 2023-08-09 16:40:10 UTC

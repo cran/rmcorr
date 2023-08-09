@@ -7,20 +7,16 @@ knitr::opts_chunk$set(
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE, tidy = FALSE)
 options(width = 80)
-library("knitr", "rmarkdown", "rmcorr") 
-require(knitr)
-require(rmarkdown)
-require(rmcorr)
+library(knitr)
+library(rmarkdown)
+library(rmcorr) 
+library(corrplot) 
 
-#Kludge to add corrplot b/c of lib loc error 
-if(!require("corrplot"))
-  install.packages("corrplot")
-require(corrplot)
 
 ## ---- eval = FALSE------------------------------------------------------------
 #  #Install corrplot
-#  install.packages("corrplot")
-#  require(corrplot)
+#   install.packages("corrplot")
+#   require(corrplot)
 
 ## -----------------------------------------------------------------------------
 dist_rmc_mat <- rmcorr_mat(participant = Subject, 
