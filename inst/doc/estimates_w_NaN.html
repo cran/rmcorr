@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jonathan Bakdash and Laura Marusich" />
 
-<meta name="date" content="2023-08-09" />
+<meta name="date" content="2024-07-26" />
 
 <title>rmcorr Estimates with NaN</title>
 
@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -150,6 +150,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 div.csl-bib-body { }
 div.csl-entry {
 clear: both;
+margin-bottom: 0em;
 }
 .hanging div.csl-entry {
 margin-left:2em;
@@ -362,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">rmcorr Estimates with NaN</h1>
 <h4 class="author">Jonathan Bakdash and Laura Marusich</h4>
-<h4 class="date">2023-08-09</h4>
+<h4 class="date">2024-07-26</h4>
 
 
 
@@ -415,26 +416,25 @@ Baker 2022)</span></h4>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>rmc.ghosh <span class="ot">&lt;-</span> <span class="fu">rmcorr</span>(Subject, A3, A4, ghosh_synth)</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; Warning in rmcorr(Subject, A3, A4, ghosh_synth): &#39;Subject&#39; coerced into a</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; factor</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Warning in sqrt(SSFactor/(SSFactor + SSresidual)): NaNs produced</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>rmc.ghosh</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; Repeated measures correlation</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; r</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; NaN</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; degrees of freedom</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 9</span></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; p-value</span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; 1</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; 95% confidence interval</span></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; NaN NaN</span></span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#The default rmcorr plot doesn&#39;t jitter values, this masks identical values because they are drawn on top of each other</span></span>
-<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="fu">plot</span>(rmc.ghosh)</span></code></pre></div>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>rmc.ghosh</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; Repeated measures correlation</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; r</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 0</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; degrees of freedom</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; 9</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; p-value</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; 1</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; 95% confidence interval</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; -0.599875 0.599875</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#The default rmcorr plot doesn&#39;t jitter values, this masks identical values because they are drawn on top of each other</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="fu">plot</span>(rmc.ghosh)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 <p>The NaN estimates appear to be due to insufficient varability in the
 dataset. A possible way to address this issue is adding a small amount
@@ -489,7 +489,7 @@ results provides at least a starting point: A common linear association
 around 0. A much more complicated alternative is fitting a multilevel
 model with an appropriate distribution for zero-inflated data (e.g.,
 negative binomial distribution or zero-inflated Poisson).</p>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-ggExtra" class="csl-entry">
 Attali, Dean, and Christopher Baker. 2022. <em>ggExtra: Add Marginal
 Histograms to ’Ggplot2’, and More ’Ggplot2’ Enhancements</em>. <a href="https://CRAN.R-project.org/package=ggExtra">https://CRAN.R-project.org/package=ggExtra</a>.

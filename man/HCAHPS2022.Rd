@@ -44,7 +44,7 @@ HCAHPS is a standardized and validated survey instrument for evaluating
 patient experience. Patient experience is an indicator of healthcare quality
 and is defined as the "... range of interactions at patients have with the
 healthcare system, including their care from health plans, and from doctors,
-nurses, and staff in hospitals..."  \url{https://www.ahrq.gov/cahps/about-cahps/patient-experience/index.html}.
+nurses, and staff in hospitals..."  \url{https://web.archive.org/web/20230206233908/https://www.ahrq.gov/cahps/about-cahps/patient-experience/index.html}.
 
 The HCAHPS composite measures consist of multiple questions and, here, are top box scores (see \url{https://www.hcahpsonline.org/en/summary-analyses/}).
 In addition to patient experience, there are additional measures such as whether the hospital is
@@ -53,7 +53,7 @@ recommended or not, the number or participating hospitals, and the survey respon
 \item Note this is \emph{not} a representative sample
 \item Measures are averaged at the state/territory level
 \item Respondents were discharged from a hospital between July 2021 to July 2022
-\item Results are patient-mix adjusted, see \doi{https://doi.org/10.1111/j.1475-6773.2008.00914.x}
+\item Results are patient-mix adjusted, see \doi{10.1111/j.1475-6773.2008.00914.x}
 }
 
 Additional Information:

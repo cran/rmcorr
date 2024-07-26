@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -69,7 +69,7 @@ require(pals)
 
 #sessionInfo()
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  if (!require("pacman")) install.packages("pacman")
 #  pacman::p_load(pwr, psych, RColorBrewer, plotrix, rmcorr, lme4, ggplot2,
 #                 AICcmodavg, ggplot2, merTools, pals)
@@ -124,7 +124,7 @@ require(pals)
 #  getOption("boot.ncpus", 1L)
 #  
 
-## ---- fig.height = 6, fig.width = 8-------------------------------------------
+## ----fig.height = 6, fig.width = 8--------------------------------------------
 # echo = FALSE, warning = FALSE, results =  "hide",
 set.seed(1)
 
@@ -194,7 +194,7 @@ abline(lm(submeany[,2]~submeanx[,2]),col="gray50")
 #dev.copy(pdf, file="plots/Figure1_Rmcorr_vs_reg.pdf", height = 6, width = 8)
 #dev.off()
 
-## ---- fig.height = 8, fig.width = 8-------------------------------------------
+## ----fig.height = 8, fig.width = 8--------------------------------------------
 par(mfrow = c(3,3), mar = c(1,1,.5,.5), mgp = c(2.5,.75,0), 
     oma = c(4,4,4,0), cex = 1.1)
 
@@ -268,7 +268,7 @@ mtext(side = 2, outer = T, line = 1.5, "y", at = c(.175, .5, .85), las = 1)
 #dev.copy(pdf, file="plots/Figure2_Rmcorr_vs_OLS.pdf", height = 8, width = 8)
 #dev.off()
 
-## ---- fig.height = 6, fig.width = 12------------------------------------------
+## ----fig.height = 6, fig.width = 12-------------------------------------------
 set.seed(10)
 initX <- rnorm(15)
 newY <- NULL
@@ -346,7 +346,7 @@ mtext(side = 2, "y", las = 1, line = 2.5, cex = 1.2)
 #dev.copy(pdf, file="plots/Figure3_Transformations.pdf", height = 6, width = 12)
 #dev.off()
 
-## ---- fig.height = 6, fig.width = 6-------------------------------------------
+## ----fig.height = 6, fig.width = 6--------------------------------------------
 power.rmcorr<-function(k, N, effectsizer, sig)
 {
     pwr.r.test(n = ((N)*(k-1))+1, r = effectsizer, sig.level = sig) 
@@ -444,7 +444,7 @@ lines(nvals, powPearsonlarge, col=purplecolors[2], lwd = 2.5)
 #dev.copy(pdf, file="plots/Figure4_Power_curve.pdf", height = 6, width = 6)
 #dev.off()
 
-## ---- fig.width = 9, fig.height = 6-------------------------------------------
+## ----fig.width = 9, fig.height = 6--------------------------------------------
 #Note for details on Raz: Data captured from Figure 8, Cerebellar Hemispheres (lower right)
 #a) Reproduce correlations in the paper: Cross-sectional (correlation at Time 1)
 Time1raz2005<-subset(raz2005, Time == 1)
@@ -553,7 +553,7 @@ title("C)", adj = 0)
 #dev.copy(pdf, file="plots/Figure5_Volume_Age.pdf", height = 6, width = 6)
 #dev.off()
 
-## ---- fig.width = 9, fig.height = 6-------------------------------------------
+## ----fig.width = 9, fig.height = 6--------------------------------------------
 #a - rmcorr
 vissearch.rmc <- rmcorr(participant = sub, measure1 = rt, measure2 = acc, dataset = gilden2010)
 print(vissearch.rmc)
@@ -612,7 +612,7 @@ title("C)", adj = 0)
 #dev.copy(pdf, file="plots/Figure6_Visual_Search.pdf", height = 9, width = 6)
 #dev.off()
 
-## ---- echo = TRUE, warning = FALSE, fig.width = 6, fig.height = 6-------------
+## ----echo = TRUE, warning = FALSE, fig.width = 6, fig.height = 6--------------
 brainvolage.rmc <- rmcorr(participant = Participant, measure1 = Age, measure2 = Volume, dataset = raz2005)
 
 #Null multilevel model: Random intercept and fixed slope
@@ -668,7 +668,7 @@ ggplot(raz2005, aes(x = Age, y = Volume, group = Participant, color = Participan
 #ggsave(file = "plots/AppendixC_Figure1.pdf", width = 5.70 , height = 5.73, dpi = 300)
 #dev.off()
 
-## ---- echo = TRUE,  warning = FALSE, fig.width = 6, fig.height = 6------------
+## ----echo = TRUE,  warning = FALSE, fig.width = 6, fig.height = 6-------------
 vissearch.rmc <- rmcorr(participant = sub, measure1 = rt, measure2 = acc, dataset = gilden2010)
 
 null.vis <- lmer(acc ~ rt + (1 | sub), data = gilden2010, REML = FALSE)
@@ -748,7 +748,7 @@ ggplot(gilden2010, aes(x = rt, y = acc, group = sub, color = sub)) +
   predictInterval(model1.vis, newdata = gilden2010, n.sims = 1000)
   warnings()
 
-## ---- fig.height = 6, fig.width = 6-------------------------------------------
+## ----fig.height = 6, fig.width = 6--------------------------------------------
 brainvolage.rmc <- rmcorr(participant = Participant, measure1 = Age, measure2 = Volume, dataset = raz2005)
 print(brainvolage.rmc)
 

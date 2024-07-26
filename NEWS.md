@@ -1,3 +1,9 @@
+# rmcorr 0.7.0
+* Added geom for simplified graphing with ggplot2: geom_rmc 
+* Added vignette for overfitting/pseudoreplication
+* Updated roxygen to 7.3.2 and now using _PACKAGE
+* Web docs: Added "lightswitch" for themes
+
 # rmcorr 0.6.0
 
 * Added HCAHPS2022 dataset and description  
@@ -83,6 +89,3 @@
 * column names can be entered as strings and dynamically
 * dataset parameter is no longer required in the plot.rmc function
 * Added a `NEWS.md` file to track changes to the package.
-
-
-

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Jonathan Bakdash and Laura Marusich" />
+
+<meta name="date" content="2024-07-26" />
+
+<title>Overfitting/Pseudoreplication</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Overfitting/Pseudoreplication</h1>
+<h4 class="author">Jonathan Bakdash and Laura Marusich</h4>
+<h4 class="date">2024-07-26</h4>
+
+
+
+<div id="overfittingpseudoreplication" class="section level3">
+<h3>Overfitting/Pseudoreplication</h3>
+<p>In this vignette, we demonstrate the potential consequences of a
+statistical analysis that ignores dependencies in data. Such overfitting
+may produce <strong>misestimated effect sizes with suppressed
+variability leading to underestimated <em>p</em>-values</strong>. This
+phenomenon is also widely referred to as
+<strong>pseudoreplication</strong> <span class="citation">(Hurlbert
+1984; Lazic 2010; Eisner 2021)</span> or a “unit of analysis error”
+<span class="citation">(Hurlbert 2009)</span>. For an accessible
+introduction to this topic see <span class="citation">Reinhart
+(2015)</span></p>
+<p>This is a simplified illustration of the consequences for
+overfitting/pseudoreplication, it is not comprehensive. Overfitting is
+not limited to simple regression/correlation and there are multiple
+types of pseudoreplication including data collected over space and time
+<span class="citation">(Hurlbert 1984, 2009)</span>.</p>
+<div id="running-code-below-requires-dplyr-esc-and-patchwork" class="section level4">
+<h4>Running Code Below Requires: dplyr, esc, and patchwork</h4>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;dplyr&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;esc&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">require</span>(esc)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;patchwork&quot;</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">require</span>(patchwork)</span></code></pre></div>
+</div>
+<div id="example-of-overfitting" class="section level4">
+<h4>Example of Overfitting</h4>
+<p>We illustrate the consequences of overfitting/pseudoreplication using
+our <a href="../reference/marusich2016_exp2.html">data</a> from <span class="citation">Marusich et al. (2016)</span>. This dataset has a
+sample size of <em>N</em> = 28 dyads (two participants working
+together), where each dyad has <em>k</em> = 3 repeated measures of two
+variables: a total of 84 paired observations (<em>N</em> x <em>k</em>).
+The two measured variables were scores on the Mission Awareness Rating
+Scale (MARS) and target-capture time, both assessed in three separate
+experimental blocks.</p>
+<p>Repeated measures correlation is a technique for assessing the
+within-subject (in this example, within-dyad) relationship between two
+variables; for example, does a dyad tend to demonstrate higher awareness
+scores in blocks where it also generates faster target-capture times?
+Sometimes, however, the relevant research question is about
+between-subject (dyad) associations; for example, do dyads who tend to
+perform better on one variable also tend to perform better on the other?
+To answer this second question, it may be tempting to treat the repeated
+measures data as independent. Below we demonstrate the potential
+consequences of this approach.</p>
+<p>In the left figure, we fit a simple regression/correlation improperly
+treating the 84 total observations as independent units of analysis. In
+the right figure, we demonstrate one approach to analyzing the between
+(dyad) relationship without overfitting: averaging the data by the unit
+of analysis (dyad). Note this approach removes all <em>within (dyad)
+information</em>.</p>
+<p>The x-axis depicts scores on the Mission Awareness Rating Scale
+(MARS), with higher values representing better situation awareness. The
+y-axis is target-capture times, the time in seconds to capture High
+Value Targets (HVT) during the task. Smaller values (faster times)
+represent better task performance. The band around each regression line
+is a 95% confidence interval.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>overfit.plot <span class="ot">&lt;-</span> </span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> marusich2016_exp2, <span class="fu">aes</span>(<span class="at">x =</span> MARS, <span class="at">y =</span> HVT_capture)) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> <span class="fu">factor</span>(Pair))) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method=</span> <span class="st">&quot;lm&quot;</span>, <span class="at">level =</span> <span class="fl">0.95</span>) <span class="sc">+</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>), <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">30</span>)) <span class="sc">+</span> </span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="st">&quot;Capture Time (seconds)&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;none&quot;</span>) </span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>marusich2016_avg <span class="ot">&lt;-</span> marusich2016_exp2 <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>                    <span class="fu">group_by</span>(Pair) <span class="sc">%&gt;%</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>                    <span class="fu">summarize</span>(<span class="at">Mean_MARS =</span> <span class="fu">mean</span>(MARS),</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>                              <span class="at">Mean_HVT_capture =</span> <span class="fu">mean</span>(HVT_capture))</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>average.plot <span class="ot">&lt;-</span> </span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> marusich2016_avg, </span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x =</span> Mean_MARS, <span class="at">y =</span> Mean_HVT_capture)) <span class="sc">+</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">fullrange =</span> <span class="cn">TRUE</span>, <span class="at">method=</span> <span class="st">&quot;lm&quot;</span>, <span class="at">level =</span> <span class="fl">0.95</span>) <span class="sc">+</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>), <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">30</span>)) <span class="sc">+</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> <span class="fu">factor</span>(Pair))) <span class="sc">+</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">&quot;Mean MARS&quot;</span>) <span class="sc">+</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="st">&quot;Mean Capture Time (seconds)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>    <span class="fu">scale_colour_discrete</span>(<span class="at">name =</span> <span class="st">&quot;Dyad&quot;</span>) <span class="sc">+</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>overfit.cor <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(marusich2016_exp2<span class="sc">$</span>MARS, marusich2016_exp2<span class="sc">$</span>HVT_capture)</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>average.cor <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(marusich2016_avg<span class="sc">$</span>Mean_MARS, marusich2016_avg<span class="sc">$</span>Mean_HVT_capture)</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>df.s <span class="ot">&lt;-</span> <span class="fu">rbind</span>(overfit.cor<span class="sc">$</span>parameter, average.cor<span class="sc">$</span>parameter)</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>r.s  <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">round</span>(<span class="fu">rbind</span>(overfit.cor<span class="sc">$</span>estimate, average.cor<span class="sc">$</span>estimate), <span class="at">digits =</span> <span class="dv">2</span>)) </span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>CI.s <span class="ot">&lt;-</span> <span class="fu">formatC</span>(<span class="fu">rbind</span>(overfit.cor<span class="sc">$</span>conf.int, </span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>          average.cor<span class="sc">$</span>conf.int), <span class="at">digits =</span> <span class="dv">2</span>,</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>          <span class="at">format =</span> <span class="st">&#39;f&#39;</span>)</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>p.vals <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">round</span>(overfit.cor<span class="sc">$</span>p.value, <span class="at">digits =</span> <span class="dv">3</span>), </span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>                <span class="fu">prettyNum</span>(average.cor<span class="sc">$</span>p.value, <span class="at">digits =</span> <span class="dv">2</span>, </span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>                          <span class="at">drop0trailing =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a>overfit.plot <span class="sc">+</span> average.plot </span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt; `geom_smooth()` using formula = &#39;y ~ x&#39;</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt; `geom_smooth()` using formula = &#39;y ~ x&#39;</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The inferential statistics for the above plots are:</p>
+<p>Overfit (left): <em>r(82)</em> = -0.35, 95% CI [-0.53, -0.15],
+<em>p</em> = 0.001 (Exact <em>p</em>-value = 0.0010208)</p>
+<p>Average (right): <em>r(26)</em> = -0.09, 95% CI [-0.44, 0.30],
+<em>p</em> = 0.67 (Exact <em>p</em>-value = 0.6663228)</p>
+<p>For the overfit results, note the Pearson correlation has 82 degrees
+of freedom which is excessive because it implies a sample size of
+<em>N</em> = 84 dyads (<em>N</em> - 2 degrees of freedom for a
+correlation <span class="citation">(Cohen et al. 2013)</span>). That is,
+the actual sample size (<em>N</em> = 28 dyads) is erroneously modeled as
+<strong>84 independent units</strong> by ignoring the three paired,
+repeated measures per dyad.</p>
+<p>These two analyses produce varied results. The overfit model
+erroneously produces a precise moderate, negative correlation for higher
+MARS values being associated with lower times to capture targets (better
+performance). In contrast, the average model indicates a weak negative
+correlation with high uncertainty between dyads.</p>
+<div id="comparison-to-rmcorr" class="section level5">
+<h5>Comparison to rmcorr</h5>
+<p>As a comparison, we show the results of conducting a repeated
+measures correlation analysis on the same dataset. As described above,
+this method addresses a different question of the nature of the
+within-dyad relationship, rather than between dyads. In this analysis,
+averaging is not required, as the dependencies in the data are taken
+into account.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>marusich.rmc <span class="ot">&lt;-</span> <span class="fu">rmcorr</span>(<span class="at">participant =</span> Pair, </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                       <span class="at">measure1 =</span> MARS, </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                       <span class="at">measure2 =</span> HVT_capture, </span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                       <span class="at">data =</span> marusich2016_exp2)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Warning in rmcorr(participant = Pair, measure1 = MARS, measure2 = HVT_capture,</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; : &#39;Pair&#39; coerced into a factor</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>rmc.plot <span class="ot">&lt;-</span> </span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> marusich2016_exp2, </span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x =</span> MARS, <span class="at">y =</span> HVT_capture, <span class="at">group =</span> <span class="fu">factor</span>(Pair), <span class="at">color =</span> <span class="fu">factor</span>(Pair))) <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> <span class="fu">factor</span>(Pair))) <span class="sc">+</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> marusich.rmc<span class="sc">$</span>model<span class="sc">$</span>fitted.values)) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>    <span class="fu">scale_colour_discrete</span>(<span class="at">name =</span> <span class="st">&quot;Dyad&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="st">&quot;Capture Time (seconds)&quot;</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>rmc.r <span class="ot">&lt;-</span> <span class="fu">round</span>(marusich.rmc<span class="sc">$</span>r, <span class="dv">2</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>rmc.CI <span class="ot">&lt;-</span> <span class="fu">round</span>(marusich.rmc<span class="sc">$</span>CI, <span class="dv">2</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>rmc.p <span class="ot">&lt;-</span> <span class="fu">formatC</span>(marusich.rmc<span class="sc">$</span>p, <span class="at">format =</span> <span class="st">&quot;fg&quot;</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>                <span class="co"># prettyNum(average.cor$p.value, digits = 2,</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>                          <span class="co"># drop0trailing = TRUE))</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>rmc.plot</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The inferential statistics for the rmcorr analysis are:</p>
+<p><em>r<sub>rmcorr</sub>(55)</em> = -0.59, 95% CI [-0.74, -0.39],
+<em>p</em> = 0.0000014.</p>
+<div id="levels-of-analysis" class="section level6">
+<h6>Levels of Analysis</h6>
+<p>The above analysis indicates a strong <em>within-dyad</em> or
+relative relationship for the two measures. At the within level of
+analysis, higher values of MARS have a large to very large relative
+(within-dyad) association with better performance, lower target capture
+times; and vice-versa. However, the dyad-to-dyad comparisons for MARS or
+performance values are only weakly predictive at the between level of
+analysis. In other words, using a specific MARS (or performance) value
+to predict the other is quite limited between the dyads. Results at the
+between level of analysis may not necessarily generalize to the within
+level of analysis <span class="citation">(Curran and Bauer 2011; Fisher,
+Medaglia, and Jeronimus 2018; Molenaar and Campbell 2009)</span></p>
+</div>
+</div>
+<div id="consequences-of-overfitting" class="section level5">
+<h5>Consequences of Overfitting:</h5>
+<ol style="list-style-type: decimal">
+<li><p>Misestimated effect size: The overfit analysis has an
+approximately point-estimated medium negative correlation, whereas the
+averaged analysis has slightly less than a small negative
+point-estimated correlation.</p></li>
+<li><p>Spurious precision: The coverage of the confidence intervals
+(visually on the plot and matching inferential statistics) is narrower
+than it should be for the overfit analysis compared to the averaged
+data.</p></li>
+<li><p>Suppressed <em>p</em>-value: Because overfitting produces a
+medium negative effect size and underestimates variance, the overfit
+example is highly statistically significant.</p></li>
+</ol>
+</div>
+</div>
+<div id="spurious-precision-underestimation-of-variability" class="section level4">
+<h4>Spurious Precision: Underestimation of Variability</h4>
+<p>To compare the suppression of variability with the overfit model
+versus a correct model, we use the Fisher <em>Z</em> approximation for
+the standard deviation (sd) is: <span class="math display">\[
+\frac{1}{\sqrt{N-3}}
+\]</span> This formula is calculated using the respective sample sizes
+for each model <em>N</em> = 84 (overfit) and <em>N</em> = 28
+(correct).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>N.vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">100</span>, <span class="at">by =</span> <span class="dv">1</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>sd.Z <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fu">sqrt</span>(N.vals<span class="dv">-3</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>sd.overfit <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(N.vals, sd.Z))</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>sd.cor <span class="ot">&lt;-</span> sd.Z[N.Marusich2016<span class="dv">-4</span>] <span class="co">#Have to subtract 4 because N.vals starts at 5, not 1</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>sd.overf <span class="ot">&lt;-</span> sd.Z[total.obs.Marusich2016<span class="dv">-4</span>]</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#We could determine the inflated sample size for the overfit model using its degrees of freedom + 2</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>df.s <span class="sc">+</span> <span class="dv">2</span>  <span class="sc">==</span> total.obs.Marusich2016</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt;         df</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; [1,]  TRUE</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; [2,] FALSE</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>sd.overfit.plot <span class="ot">&lt;-</span> </span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="at">data =</span> sd.overfit, </span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x =</span> N.vals, <span class="at">y =</span> sd.Z)) <span class="sc">+</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">100</span>), <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.75</span>)) <span class="sc">+</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>    <span class="fu">geom_segment</span>(<span class="at">x =</span> <span class="dv">28</span>, <span class="at">y =</span>  sd.cor, <span class="at">xend =</span> <span class="dv">84</span>, </span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>                 <span class="at">yend =</span>  sd.cor, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>    <span class="fu">geom_segment</span>(<span class="at">x =</span> <span class="dv">84</span>, <span class="at">y =</span>  sd.cor, <span class="at">xend =</span> <span class="dv">84</span>, </span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>                 <span class="at">yend =</span>  sd.overf, <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>,</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>                 <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">&quot;Analysis Sample Size&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">&quot;Fisher &quot;</span>, <span class="fu">italic</span>(<span class="st">&quot;Z&quot;</span>), <span class="st">&quot; standard deviation&quot;</span>))) <span class="sc">+</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>    <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;point&quot;</span>, <span class="at">x =</span> <span class="dv">28</span>, <span class="at">y =</span> sd.cor, </span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>    <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;point&quot;</span>, <span class="at">x =</span> <span class="dv">84</span>, <span class="at">y =</span> sd.overf, </span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>sd.overfit.plot</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>In the graph, the red dot indicates the overfit model and black dot
+shows a correct model with averaged data. Note the magnitude of sd
+underestimation with pseudoreplication is depicted by the dashed
+vertical red line: the Fisher <em>Z</em> <em>sd</em> = 0.11 for the
+overfit model is about half the value of a correct model Fisher
+<em>Z</em> <em>sd</em> = 0.20.</p>
+</div>
+<div id="detecting-overfitting" class="section level4">
+<h4>Detecting Overfitting</h4>
+<p>The easiest way to detect overfitting is comparing the the sample
+size (degrees of freedom) in statistical results to the actual sample
+size, as shown above.</p>
+<p>However, if degrees of freedom for reported results are unavailable
+it may still be possible to detect overfitting. For example, the actual
+sample size <em>N</em> and reported (ideally exact) <em>p</em>-value can
+be used to calculate their corresponding expected effect size. Then, the
+expected effect and reported effect can be compared.</p>
+<p>We demonstrate this using the <em>esc</em> package <span class="citation">(Lüdecke 2019)</span> to determine the expected
+correlation (Fisher <em>Z</em>) for an actual sample size of <em>N</em>
+= 28 with a reported <em>p-value (exact)</em> = 0.0010208 from the
+overfit analysis. We perform the Fisher <em>Z</em>-to-<em>r</em>
+transformation, using the <em>psych</em> package <span class="citation">(William Revelle 2024)</span>, to compare the values of
+the expected correlation versus the reported correlation.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">#Calculate the expected correlation using the reported p-value and actual sample size </span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#esc_t assumes p-value is two-tailed and uses a Fisher Z transformation</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>calc.z <span class="ot">&lt;-</span> <span class="fu">esc_t</span>(<span class="at">p =</span> <span class="fu">as.numeric</span>(p.vals[<span class="dv">1</span>]), </span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>                      <span class="at">totaln =</span> N.Marusich2016, </span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>                      <span class="at">es.type =</span> <span class="st">&quot;r&quot;</span>)<span class="sc">$</span>es</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>reported.r <span class="ot">=</span> <span class="fu">as.numeric</span>(r.s[<span class="dv">1</span>])</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#Overfit?</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="fu">fisherz2r</span>(calc.z) <span class="sc">!=</span> <span class="fu">abs</span>(reported.r)  </span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#Note calc.z will always be positive using esc_t() this way</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#If the reported.r is not a Fisher Z value - either it should be transformed or the calc.z should be transformed</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="fu">fisherz2r</span>(calc.z) </span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; [1] 0.5284473</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>reported.r</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; [1] -0.35</span></span></code></pre></div>
+<p>See the last code chunk in this R Markdown document for examples of
+detecting overfit correlations from results reported in published papers
+(<a href="https://osf.io/cnfjt" class="uri">https://osf.io/cnfjt</a>)
+from a systematic review and meta-analysis <span class="citation">(Bakdash et al. 2022)</span>.</p>
+<div id="caveats" class="section level5">
+<h5>Caveats</h5>
+<p>Detection of overfitting should be used with caution because
+mismatches in reported versus expected values could be due to missing or
+excluded data in the reported statistics. Missing data can produce a
+lower sample size (based on the reported statistics) than the actual
+sample size; as opposed to an inflated sample size with true
+pseudoreplication.</p>
+<p>Additionally, overfit models can be adjusted or penalized to account
+for dependencies in data. Examples of such techniques include
+cluster-robust errors, regularization, and ensemble models.</p>
+<p>Last, we contend there <strong>may</strong> be some circumstances
+where overfitting is acceptable (e.g., exploratory data analysis
+including visualization, separate models for each participant with a
+large number of repeated trials [such as psychophysics], or no
+meaningful difference between the overfit model without and with
+adjustment techniques).</p>
+</div>
+</div>
+<div id="prevelance-of-pseudoreplication" class="section level4">
+<h4>Prevelance of Pseudoreplication</h4>
+<p>The prevalence of overfitting/pseudoreplication in published papers
+suggest it is a frequent statistical error across disciplines. For
+results reported in a single issue of the journal <em>Nature
+Neuroscience</em> 36% of papers had one or more results with suspected
+overfitting and 12% of papers had definitive evidence of
+pseudoreplication <span class="citation">(Lazic 2010)</span>. In human
+factors, using only results meeting inclusion for a systematic review,
+overfitting was found in 28% of papers: 29 out of 103<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a><span class="citation">(Bakdash et al. 2022)</span>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-bakdash2022SAmeta" class="csl-entry">
+Bakdash, Jonathan Z, Laura R Marusich, Katherine R Cox, Michael N Geuss,
+Erin G Zaroukian, and Katelyn M Morris. 2022. <span>“The Validity of
+Situation Awareness for Performance: A Meta-Analysis.”</span>
+<em>Theoretical Issues in Ergonomics Science</em> 23 (2): 221–44. <a href="https://doi.org/10.1080/1463922X.2021.1921310">https://doi.org/10.1080/1463922X.2021.1921310</a>.
+</div>
+<div id="ref-cohen2013applied" class="csl-entry">
+Cohen, Jacob, Patricia Cohen, Stephen G West, and Leona S Aiken. 2013.
+<em>Applied Multiple Regression/Correlation Analysis for the Behavioral
+Sciences</em>. Routledge.
+</div>
+<div id="ref-curran2011disaggregation" class="csl-entry">
+Curran, Patrick J, and Daniel J Bauer. 2011. <span>“The Disaggregation
+of Within-Person and Between-Person Effects in Longitudinal Models of
+Change.”</span> <em>Annual Review of Psychology</em> 62 (1): 583–619. <a href="https://doi.org/10.1146/annurev.psych.093008.100356">https://doi.org/10.1146/annurev.psych.093008.100356</a>.
+</div>
+<div id="ref-eisner2021pseudoreplication" class="csl-entry">
+Eisner, David A. 2021. <span>“Pseudoreplication in Physiology: More
+Means Less.”</span> <em>Journal of General Physiology</em> 153 (2). <a href="https://doi.org/10.1085/jgp.202012826">https://doi.org/10.1085/jgp.202012826</a>.
+</div>
+<div id="ref-fisher2018lack" class="csl-entry">
+Fisher, Aaron J, John D Medaglia, and Bertus F Jeronimus. 2018.
+<span>“Lack of Group-to-Individual Generalizability Is a Threat to Human
+Subjects Research.”</span> <em>Proceedings of the National Academy of
+Sciences</em> 115 (27): E6106–15. <a href="https://doi.org/10.1073/pnas.1711978115">https://doi.org/10.1073/pnas.1711978115</a>.
+</div>
+<div id="ref-hurlbert1984pseudoreplication" class="csl-entry">
+Hurlbert, Stuart H. 1984. <span>“Pseudoreplication and the Design of
+Ecological Field Experiments.”</span> <em>Ecological Monographs</em> 54
+(2): 187–211. <a href="https://doi.org/10.2307/1942661">https://doi.org/10.2307/1942661</a>.
+</div>
+<div id="ref-hurlbert2009ancient" class="csl-entry">
+———. 2009. <span>“The Ancient Black Art and Transdisciplinary Extent of
+Pseudoreplication.”</span> <em>Journal of Comparative Psychology</em>
+123 (4): 434. <a href="https://doi.org/10.1037/a0016221">https://doi.org/10.1037/a0016221</a>.
+</div>
+<div id="ref-lazic2010problem" class="csl-entry">
+Lazic, Stanley E. 2010. <span>“The Problem of Pseudoreplication in
+Neuroscientific Studies: Is It Affecting Your Analysis?”</span> <em>BMC
+Neuroscience</em> 11: 1–17. <a href="https://doi.org/10.1186/1471-2202-11-5">https://doi.org/10.1186/1471-2202-11-5</a>.
+</div>
+<div id="ref-esc2019" class="csl-entry">
+Lüdecke, Daniel. 2019. <em>Esc: Effect Size Computation for Meta
+Analysis (Version 0.5.1)</em>. <a href="https://doi.org/10.5281/zenodo.1249218">https://doi.org/10.5281/zenodo.1249218</a>.
+</div>
+<div id="ref-marusich2016" class="csl-entry">
+Marusich, Laura R, Jonathan Z Bakdash, Emrah Onal, Michael S Yu, James
+Schaffer, John O’Donovan, Tobias Höllerer, Norbou Buchler, and Cleotilde
+Gonzalez. 2016. <span>“Effects of Information Availability on
+Command-and-Control Decision Making: Performance, Trust, and Situation
+Awareness.”</span> <em>Human Factors</em> 58 (2): 301–21. <a href="https://doi.org/10.1177/0018720815619515">https://doi.org/10.1177/0018720815619515</a>.
+</div>
+<div id="ref-molenaar2009new" class="csl-entry">
+Molenaar, Peter CM, and Cynthia G Campbell. 2009. <span>“The New
+Person-Specific Paradigm in Psychology.”</span> <em>Current Directions
+in Psychological Science</em> 18 (2): 112–17. <a href="https://doi.org/10.1111/j.1467-8721.2009.01619.x">https://doi.org/10.1111/j.1467-8721.2009.01619.x</a>.
+</div>
+<div id="ref-reinhart2015statistics" class="csl-entry">
+Reinhart, Alex. 2015. <em>Statistics Done Wrong: The Woefully Complete
+Guide</em>. No Starch Press.
+</div>
+<div id="ref-psych2024" class="csl-entry">
+William Revelle. 2024. <em>Psych: Procedures for Psychological,
+Psychometric, and Personality Research</em>. Evanston, Illinois:
+Northwestern University. <a href="https://CRAN.R-project.org/package=psych">https://CRAN.R-project.org/package=psych</a>.
+</div>
+</div>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>26 papers had all overfit results and 3 papers had
+partial results with overfitting. This calculation had 103 total papers
+= 74 (no overfitting) + 3 (partial overfitting) + 26 (all
+overfitting).<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
